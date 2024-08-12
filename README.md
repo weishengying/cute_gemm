@@ -1,5 +1,7 @@
 # cute_gemm
 
+对应的 blog： https://zhuanlan.zhihu.com/p/707715989
+
 ```
 cd gemm_X && make
 ./a.out
