@@ -99,9 +99,9 @@ float testF16F16GemmMaxError(
 
     srand(time(0));
     for (int i = 0; i < M * K; i++)
-        h_a[i] = (T)(rand() / 65504 - 65504/2);
+        h_a[i] = (T)((rand() % 200 - 100) * 0.01); // -1 ~ 1
     for (int i = 0; i < K * N; i++)
-        h_b[i] = (T)(rand() / 65504 - 65504/2);
+        h_b[i] = (T)((rand() % 200 - 100) * 0.01);
 
     cpuF16F16Gemm(h_a, h_b, h_c, M, N, K);
 
@@ -148,9 +148,9 @@ float testF16F16GemmMaxError_V2(
 
     srand(time(0));
     for (int i = 0; i < M * K; i++)
-        h_a[i] = (T)(rand() / 65504 - 65504/2);
+        h_a[i] = (T)((rand() % 200 - 100) * 0.01); // -1 ~ 1
     for (int i = 0; i < K * N; i++)
-        h_b[i] = (T)(rand() / 65504 - 65504/2);
+        h_b[i] = (T)((rand() % 200 - 100) * 0.01);
 
     cublasHandle_t handle;
     cublasCreate(&handle);
@@ -160,12 +160,12 @@ float testF16F16GemmMaxError_V2(
     cudaMemcpy(d_a, h_a, size_a, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, h_b, size_b, cudaMemcpyHostToDevice);
     
-    cublasHgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, M, N, K,
-                &alpha, (half *)d_a, K, (half *)d_b, K,
-                &beta, (half *)d_c_ref, N);
-    // cublasHgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, N, M, K,
-    //             &alpha, (half *)d_b, K, (half *)d_a, K, 
+    // cublasHgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, M, N, K,
+    //             &alpha, (half *)d_a, K, (half *)d_b, K,
     //             &beta, (half *)d_c_ref, N);
+    cublasHgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, N, M, K,
+                &alpha, (half *)d_b, K, (half *)d_a, K, 
+                &beta, (half *)d_c_ref, N);
     // 上面两种调用 cublas 方式等同
     gpuF16F16Gemm(d_a, d_b, d_c, M, N, K);
 
